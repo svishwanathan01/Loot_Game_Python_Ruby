@@ -1,6 +1,6 @@
-########## ENTER FULL NAME ##########
-########## ENTER SBU ID #############
-########## ENTER NET ID #############
+########## Sabareesh Vishwanathan ##########
+########## 112585006 #############
+########## SAVISHWANATH #############
 
 import random
 
@@ -12,32 +12,48 @@ playerNames = ["Joy", "Nan", "Sat"]
 
 class MerchantShip:
     def __init__(self, value):
-        pass
+        self.value = value
 
     def get_value(self):
-        pass
+        return self.value
 
 
 class PirateShip:
     def __init__(self, color, attack_value):
-        pass
+        self.color = color
+        self.attack_value = attack_value
 
     def get_value(self):
-        pass
+        return self.attack_value
 
     def get_color(self):
-        pass
+        return self.color
 
 
 class Captain:
     def __init__(self, color):
-        pass
+        self.color = color
 
     def get_color(self):
-        pass
+        return self.color
 
 
 class Admiral:
+    __instance = None
+    def __init__(self):
+        if Admiral.__instance is not None:
+            raise RuntimeError()
+        else:
+            Admiral.__instance = self
+
+    @staticmethod
+    def get_instance():
+        if Admiral.__instance is None:
+            Admiral()
+        return Admiral.__instance
+
+
+class Deck:
     def __init__(self):
         pass
 
@@ -48,9 +64,16 @@ class Admiral:
 
 class Player:
     def __init__(self, name):
+        self.name = name
+        self.merchant_ships_at_sea = []
+        self.merchant_ships_captured = []
+        self.hand = []
+        self.merchant_pirates = {}
+        self.dealer = False
         pass
 
     def deal(self, game_state):
+
         pass
 
     def see_hand(self):
@@ -69,14 +92,6 @@ class Player:
         pass
 
     def play_admiral(self, admiral_card, merchant_card):
-        pass
-
-class Deck:
-    def __init__(self):
-        pass
-
-    @staticmethod
-    def get_instance():
         pass
 
 

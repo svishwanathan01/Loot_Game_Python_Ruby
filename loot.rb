@@ -1,6 +1,6 @@
-########## ENTER FULL NAME ##########
-########## ENTER SBU ID #############
-########## ENTER NET ID #############
+########## Sabareesh Vishwanathan ##########
+########## 112585006 #############
+########## SAVISHWANATH #############
 
 $pirateColors = [:blue, :green, :purple, :gold]
 $maxPlayersAllowed = 5
