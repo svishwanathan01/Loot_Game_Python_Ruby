@@ -53,6 +53,10 @@ class Admiral:
             Admiral()
         return Admiral.__instance
 
+    @staticmethod
+    def set_instance():
+        Admiral.__instance = None
+
 
 class Deck:
     __instance = None
@@ -83,13 +87,17 @@ class Deck:
                           PirateShip('gold', 1), PirateShip('gold', 1), PirateShip('gold', 2), PirateShip('gold', 2),
                           PirateShip('gold', 2), PirateShip('gold', 2), PirateShip('gold', 3), PirateShip('gold', 3),
                           PirateShip('gold', 3), PirateShip('gold', 3), PirateShip('gold', 4), PirateShip('gold', 4),
-                          Captain('blue'), Captain('green'), Captain('purple'), Captain('gold'), Admiral()]
+                          Captain('blue'), Captain('green'), Captain('purple'), Captain('gold'), Admiral.get_instance()]
 
     @staticmethod
     def get_instance():
         if Deck.__instance is None:
             Deck()
         return Deck.__instance
+
+    @staticmethod
+    def set_instance():
+        Deck.__instance = None
 
 
 class Player:
@@ -103,16 +111,19 @@ class Player:
         pass
 
     def deal(self, game_state):
-        random.shuffle(game_state.deck)
+        random.shuffle(game_state.deck.cards)
+        print(game_state.deck.cards)
+        print(game_state.deck)
         self.dealer = game_state.current_player
         for player in game_state.players:
             for i in range(1, 7):
-                player.hand.append(game_state.deck.pop(0))
+                player.hand.append(game_state.deck.cards.pop(0))
 
     def see_hand(self):
-        pass
+        return self.hand
 
     def draw_card(self, game_state):
+        game_state.current_player = self
         game_state.draw_card()
 
     def float_merchant(self, card):
@@ -122,37 +133,76 @@ class Player:
         return False
 
     def play_pirate(self, pirate_card, merchant_card, p1):
-        if pirate_card not in self.hand or merchant_card not in p1.merchant_pirates.keys():
+        # if pirate_card not in self.hand or merchant_card not in p1.merchant_ships_at_sea:
+        if pirate_card not in self.hand:
             return False
-        exist = False
-        for attacks in p1.merchant_pirates.values():
-            if attacks[0] == self:
-                if pirate_card.get_Color() != attacks[1].get_color():
+        if p1.merchant_pirates != {}:
+            items = list(p1.merchant_pirates.items())
+            if isinstance(items[len(items)-1], Admiral) or isinstance(items[len(items)-1], Captain):
+                return False
+        if not isinstance(pirate_card, PirateShip):
+            return False
+        for attacks in p1.merchant_pirates.values(): # check if ship has been attacked with color already
+            if attacks[0][0] == self:
+                if pirate_card.color != attacks[0][1].color:
                     return False
-                exist = True
-                attacks[1].attack_value = pirate_card.attack_value + attacks[1].attack_value
-        if exist == False:
-            for attacks in p1.merchant_pirates.values(): # check if ship has been attacked with color already
-                if pirate_card.get_Color() == attacks[1].get_color():
+        for attacks in p1.merchant_pirates.values(): # check if ship has been attacked with color already
+            if attacks[0][0] == self:
+                if pirate_card.color != attacks[0][1].color:
                     return False
-            p1.merchant_pirates[merchant_card] = [self, pirate_card.attack_value]
+        for attacks in p1.merchant_pirates.values(): # check if ship has been attacked with color already
+            if attacks[0][0] != self:
+                if pirate_card.color == attacks[0][1].color:
+                    return False
+        if p1.merchant_pirates.get(merchant_card) is None:
+            lst = []
+            lst.append((self, pirate_card))
+            p1.merchant_pirates[merchant_card] = lst
+        else:
+            lst = p1.merchant_pirates.get(merchant_card)
+            lst.append((self, pirate_card))
+            p1.merchant_pirates[merchant_card] = lst
+        self.hand.remove(pirate_card)
         return True
 
     def play_captain(self, captain_card, merchant_card, p1):
-        if captain_card not in self.hand or merchant_card not in p1.merchant_pirates.keys():
+        if captain_card not in self.hand:
             return False
-        exist = False
+        if not isinstance(captain_card, Captain):
+            return False
         for attacks in p1.merchant_pirates.values():
-            for attack in attacks:
-                if attacks[0] == self:
-                    if captain_card.get_Color() != attacks[1].get_color():
-                        return False
+            if attacks[0][0] == self:
+                if captain_card.color != attacks[0][1].color:
+                    return False
                 # exist = True
                 # attacks[1].attack_value = pirate_card.attack_value + attacks[1].attack_value
-        p1.merchant_pirates[merchant_card] = [self, captain_card.attack_value]
+        if p1.merchant_pirates.get(merchant_card) is None:
+            lst = []
+            lst.append((self, captain_card))
+            p1.merchant_pirates[merchant_card] = lst
+        else:
+            lst = p1.merchant_pirates.get(merchant_card)
+            lst.append((self, captain_card))
+            p1.merchant_pirates[merchant_card] = lst
+        self.hand.remove(captain_card)
+        return True
 
     def play_admiral(self, admiral_card, merchant_card):
-        pass
+        if admiral_card not in self.hand:
+            return False
+        if not isinstance(admiral_card, Admiral):
+            return False
+        if merchant_card not in self.merchant_ships_at_sea:
+            return False
+        if self.merchant_pirates.get(merchant_card) is None:
+            lst = []
+            lst.append((self, admiral_card))
+            self.merchant_pirates[merchant_card] = lst
+        else:
+            lst = self.merchant_pirates.get(merchant_card)
+            lst.append((self, admiral_card))
+            self.merchant_pirates[merchant_card] = lst
+        return True
 
 
 class Game:
@@ -177,9 +227,9 @@ class Game:
         for player in self.players:
             if player.dealer == True:
                 if index == 0:
-                    self.current_player = self.players[len(self.players) - 1]
+                    # self.current_player = self.players[len(self.players) - 1]
                     return self.players[len(self.players) - 1]
-                self.current_player = self.players[index - 1]
+                # self.current_player = self.players[index - 1]
                 return self.players[index - 1]
             index += 1
 
@@ -188,9 +238,9 @@ class Game:
         for player in self.players:
             if player == self.current_player:
                 if index == len(self.players) - 1:
-                    self.current_player = self.players[0]
+                    # self.current_player = self.players[0]
                     return self.players[0]
-                self.current_player = self.players[index+1]
+                # self.current_player = self.players[index+1]
                 return self.players[index+1]
             index += 1
 
@@ -203,13 +253,39 @@ class Game:
         return self.players[pos-1]
 
     def capture_merchant_ships(self):
-        pass
+        for player in self.players:
+            ships = player.merchant_pirates.keys()
+            for ship in ships:
+                attackingPlayer = None
+                capturedShip = None
+                capturedPlayer = None
+                value = 0
+                tie = False
+                attacks = player.merchant_pirates.get(ship)
+                for i in range(0, len(attacks)):
+                    if attacks[i][1].attack_value > value:
+                        attackingPlayer = attacks[i][0]
+                        capturedShip = attacks[i][1]
+                        capturedPlayer = player
+                        value = attacks[i][1].attack_value
+                        tie = False
+                    elif attacks[i][1].attack_value == value:
+                        tie = True
+                if attackingPlayer == self.current_player:
+                    capturedPlayer.merchant_ships_at_sea.remove(capturedShip)
+                    attackingPlayer.merchant_ships_captured.add(capturedShip)
 
     def show_winner(self):
         players_list = []
+        final_list = []
         for player in self.players:
             gold = 0
             for captured in player.merchant_ships_captured:
                 gold = gold + captured.get_value()
-            players_list.append([player, gold])
-        return players_list
+            players_list.append((player, gold))
+        players_list.sort(key=lambda x:x[1], reverse=True)
+        final_list.append(players_list[0])
+        for i in range (1, len(players_list)):
+            if players_list[i][1] == final_list[0][1]:
+                final_list.append(players_list[i])
+        return final_list
