@@ -9,24 +9,57 @@ $playerNames = ["Joy", "Nan", "Sat"]
 
 class MerchantShip
   def initialize(value)
+    @value = value
+  end
+
+  def get_value
+    @value
   end
 end
 
 class PirateShip
   def initialize(color, attack_value)
+    @color = color
+    @attack_value = attack_value
+  end
+
+  def get_color
+    @color
+  end
+
+  def get_value
+    @attack_value
   end
 end
 
 class Captain
   def initialize(color)
+    @color = color
+  end
+
+  def get_color
+    @color
   end
 end
 
 class Admiral
+  __instance = nil
   def initialize
+    if Admiral.__instance != nil
+      raise RuntimeError
+    end
   end
 
   def Admiral.get_instance
+
+  end
+end
+
+class Deck
+  def initialize
+  end
+
+  def self.get_instance
   end
 end
 
@@ -53,14 +86,6 @@ class Player
   end
 
   def play_admiral(admiral_card, merchant_card)
-  end
-end
-
-class Deck
-  def initialize
-  end
-
-  def self.get_instance
   end
 end
 
