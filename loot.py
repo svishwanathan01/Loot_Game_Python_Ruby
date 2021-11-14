@@ -2,7 +2,7 @@
 ########## 112585006 #############
 ########## SAVISHWANATH #############
 
-import random
+import random, operator
 
 pirateColors = ["blue", "green", "purple", "gold"]
 maxPlayersAllowed = 5
@@ -13,6 +13,7 @@ playerNames = ["Joy", "Nan", "Sat"]
 class MerchantShip:
     def __init__(self, value):
         self.value = value
+        # self.attacksValues = {}
 
     def get_value(self):
         return self.value
@@ -112,8 +113,8 @@ class Player:
 
     def deal(self, game_state):
         random.shuffle(game_state.deck.cards)
-        print(game_state.deck.cards)
-        print(game_state.deck)
+        # print(game_state.deck.cards)
+        # print(game_state.deck)
         self.dealer = game_state.current_player
         for player in game_state.players:
             for i in range(1, 7):
@@ -129,6 +130,7 @@ class Player:
     def float_merchant(self, card):
         if card in self.hand and isinstance(card, MerchantShip):
             self.merchant_ships_at_sea.append(card)
+            self.hand.remove(card)
             return True
         return False
 
@@ -160,6 +162,7 @@ class Player:
             lst = []
             lst.append((self, pirate_card))
             p1.merchant_pirates[merchant_card] = lst
+            # merchant_card.attacksValues[self] = pirate_card.attack_value
         else:
             lst = p1.merchant_pirates.get(merchant_card)
             for item in lst:
@@ -167,6 +170,10 @@ class Player:
                     return False
             lst.append((self, pirate_card))
             p1.merchant_pirates[merchant_card] = lst
+            # if merchant_card.attacksValues.get(self) is None:
+            #     merchant_card.attacksValues[self] = pirate_card.attack_value
+            # else:
+            #     merchant_card.attacksValues[self] += pirate_card.attack_value
         self.hand.remove(pirate_card)
         return True
 
@@ -259,14 +266,50 @@ class Game:
         return self.players[pos-1]
 
     def capture_merchant_ships(self):
-        for ship in self.current_player.merchant_ships_at_sea:
+        atEnd = False
+        ships_at_sea = self.current_player.merchant_ships_at_sea
+        to_remove = []
+        for i in range(0, len(ships_at_sea)):        # for ship in ships_at_sea:
             keys = list(self.current_player.merchant_pirates.keys())
+            ship = ships_at_sea[i]
             if ship not in keys:
-                self.current_player.merchant_ships_at_sea.remove(ship)
+                to_remove.append(ship)
+                # self.current_player.merchant_ships_at_sea.remove(ship)
                 self.current_player.merchant_ships_captured.append(ship)
-                break
+                # break
+        for ship in to_remove:
+            self.current_player.merchant_ships_at_sea.remove(ship)
+        keys = list(self.current_player.merchant_pirates.keys())
+        for key in keys:
+            attacks = self.current_player.merchant_pirates[key]
+            if isinstance(attacks[len(attacks) - 1][1], Admiral) or isinstance(attacks[len(attacks) - 1][1], Captain):
+                atEnd = True
+                if attacks[len(attacks) - 1][0] == self.current_player:
+                    self.current_player.merchant_ships_at_sea.remove(key)
+                    self.current_player.merchant_ships_captured.append(key)
+                    break
 
-
+        if atEnd == False:
+            for player in self.players:
+                to_remove = []
+                shipsAttacked = player.merchant_pirates.keys()
+                for ship in shipsAttacked:
+                    attacks = player.merchant_pirates[ship]
+                    attackMax = {}
+                    for attack in attacks:
+                        if attack[0] not in list(attackMax.keys()):
+                            attackMax[attack[0]] = attack[1].attack_value
+                        else:
+                            attackMax[attack[0]] = attackMax[attack[0]] + attack[1].attack_value
+                    sorted_d = dict(sorted(attackMax.items(), key=operator.itemgetter(1), reverse=True))
+                    lst = list(sorted_d.keys())
+                    if lst[0] == self.current_player:
+                        if len(lst) == 1:
+                            player.merchant_ships_at_sea.remove(ship)
+                            self.current_player.merchant_ships_captured.append(ship)
+                        elif attackMax[lst[0]] != attackMax[lst[1]]:
+                            player.merchant_ships_at_sea.remove(ship)
+                            self.current_player.merchant_ships_captured.append(ship)
 
 
     def show_winner(self):

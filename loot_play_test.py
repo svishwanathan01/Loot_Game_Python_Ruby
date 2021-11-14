@@ -101,7 +101,7 @@ class TestLootPlay(unittest.TestCase):
         self.assertEqual(game.choose_player(2), players[1], 'Expected player Y')
         self.assertEqual(game.choose_player(3), players[2], 'Expected player Z')
 
-    def test_capture_merchant_ship(self):
+    def test_capture_merchant_ship1(self):
         Deck.set_instance()
         Admiral.set_instance()
         deck = Deck.get_instance()
@@ -120,14 +120,56 @@ class TestLootPlay(unittest.TestCase):
         self.assertTrue(p1merchant in p1.merchant_ships_captured, 'Expected to find merchant in captured')
         self.assertEqual(p1.merchant_ships_at_sea, [], 'Didn\'t expect to find merchant')
 
+    def test_capture_merchant_ship2(self):
+        Deck.set_instance()
+        Admiral.set_instance()
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
 
+        p1 = game.players[0]
+        game.current_player = p1
+        p1pirate = PirateShip("blue", 2)
+        p1captain = Captain("blue")
+        p1merchant = MerchantShip(2)
+        p1.hand = [p1pirate, p1captain, p1merchant]
+        p1.merchant_ships_at_sea.append(p1merchant)
+        p1.hand.remove(p1merchant)
 
-        # p2 = game.players[1]
-        # p2pirate = PirateShip("blue", 2)
-        # p2merchant = MerchantShip(2)
-        # p2.hand = [p2pirate]
-        # p2.merchant_ships_at_sea = [p2merchant]
+        p2 = game.players[1]
+        p2pirate = PirateShip("purple", 2)
+        p2.hand = [p2pirate]
+        self.assertTrue(p2.play_pirate(p2pirate, p1merchant, p1))
+        self.assertTrue(p1.play_captain(p1captain, p1merchant, p1))
+        game.capture_merchant_ships()
+        self.assertTrue(p1merchant in p1.merchant_ships_captured, 'Expected to find merchant in captured')
+        self.assertEqual(p1.merchant_ships_at_sea, [], 'Didn\'t expect to find merchant')
 
+    def test_capture_merchant_ship3(self):
+        Deck.set_instance()
+        Admiral.set_instance()
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        game.current_player = p1
+        p1pirate = PirateShip("blue", 2)
+        p1captain = Captain("blue")
+        p1merchant = MerchantShip(2)
+        p1.hand = [p1pirate, p1captain, p1merchant]
+        p1.merchant_ships_at_sea.append(p1merchant)
+        p1.hand.remove(p1merchant)
+
+        p2 = game.players[1]
+        p2pirate = PirateShip("purple", 2)
+        p2.hand = [p2pirate]
+        game.current_player = p2
+        self.assertTrue(p2.play_pirate(p2pirate, p1merchant, p1))
+        # self.assertTrue(p1.play_captain(p1captain, p1merchant, p1))
+        game.capture_merchant_ships()
+        self.assertTrue(p1merchant in p2.merchant_ships_captured, 'Expected to find merchant in captured')
+        self.assertEqual(p1.merchant_ships_at_sea, [], 'Didn\'t expect to find merchant')
 
     def test_show_winner(self):
         Deck.set_instance()
@@ -217,44 +259,6 @@ class TestLootPlay(unittest.TestCase):
         Deck.set_instance()
         Admiral.set_instance()
         game = Game(Deck.get_instance())
-        names = ['X', 'Y', 'Z']
-        game.create_players(names)
-        players = game.players
-        players[0].deal(game)
-        # print(len(Deck.get_instance().cards))
-        player0Merchants = []
-        player1Merchants = []
-        player2Merchants = []
-        player0Pirates = []
-        player1Pirates = []
-        player2Pirates = []
-        for card in players[0].see_hand():
-            if isinstance(card, MerchantShip):
-                players[0].float_merchant(card)
-                player0Merchants.append(card)
-        for card in players[1].see_hand():
-            if isinstance(card, MerchantShip):
-                players[1].float_merchant(card)
-                player1Merchants.append(card)
-        for card in players[2].see_hand():
-            if isinstance(card, MerchantShip):
-                players[2].float_merchant(card)
-                player2Merchants.append(card)
-        for card in players[0].see_hand():
-            if isinstance(card, PirateShip):
-                player0Pirates.append(card)
-        for card in players[1].see_hand():
-            if isinstance(card, PirateShip):
-                player1Pirates.append(card)
-        for card in players[2].see_hand():
-            if isinstance(card, PirateShip):
-                player2Pirates.append(card)
-        self.assertTrue(players[1].play_pirate(player1Pirates[0], player0Merchants[0], players[0]))
-
-    def test_player_play_pirate_2(self):
-        Deck.set_instance()
-        Admiral.set_instance()
-        game = Game(Deck.get_instance())
         deck = Deck.get_instance()
         names = ['X', 'Y', 'Z']
         game.create_players(names)
@@ -291,11 +295,11 @@ class TestLootPlay(unittest.TestCase):
              PirateShip('gold', 3), PirateShip('gold', 3), PirateShip('gold', 4), PirateShip('gold', 4),
              Captain('blue'), Captain('green'), Captain('purple'), Captain('gold'), Admiral.get_instance(),]
         self.assertTrue(players[1].play_pirate(player1Pirates[0], player0Merchants[0], players[0]))
-        print(players[0].merchant_pirates)
+        # print(players[0].merchant_pirates)
         self.assertTrue(players[2].play_pirate(player2Pirates[0], player0Merchants[0], players[0]))
-        print(players[0].merchant_pirates)
+        # print(players[0].merchant_pirates)
 
-    def test_player_play_pirate3(self):
+    def test_player_play_pirate2(self):
         Deck.set_instance()
         Admiral.set_instance()
         deck = Deck.get_instance()
@@ -390,7 +394,7 @@ class TestLootPlay(unittest.TestCase):
                         "Expected to play pirate against merchant ship")
         self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
                          'Cannot play different colored Captain')
-        print(p2.merchant_pirates[p2.merchant_ships_at_sea[0]][1])
+        # print(p2.merchant_pirates[p2.merchant_ships_at_sea[0]][1])
         # print(p2.merchant_pirates[p2.merchant_ships_at_sea[1]])
         self.assertEqual([(p1, p1pirate1), (p1, p1pirate2)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
                          'Expected to find attack tuples in merchant_pirates object')
@@ -425,6 +429,8 @@ class TestLootPlay(unittest.TestCase):
                          'Expected to see tuple in merchant_pirates instance')
 
     def test_player_play_captain4(self):
+        Deck.set_instance()
+        Admiral.set_instance()
         deck = Deck.get_instance()
         game = Game(deck)
         game.create_players(playerNames)
@@ -455,6 +461,8 @@ class TestLootPlay(unittest.TestCase):
                          "Expected to show played (Player,Attacker)")
 
     def test_player_play_captain5(self):
+        Deck.set_instance()
+        Admiral.set_instance()
         deck = Deck.get_instance()
         game = Game(deck)
         game.create_players(playerNames)
@@ -476,6 +484,8 @@ class TestLootPlay(unittest.TestCase):
                          "Cannot play a PirateShip after a Captain has been played!")
 
     def test_player_play_captain6(self):
+        Deck.set_instance()
+        Admiral.set_instance()
         deck = Deck.get_instance()
         game = Game(deck)
         game.create_players(playerNames)
@@ -501,6 +511,8 @@ class TestLootPlay(unittest.TestCase):
                          p2.merchant_pirates[p2merchant], "Expected to show played (Player,Attacker)")
 
     def test_player_play_admiral(self):
+        Deck.set_instance()
+        Admiral.set_instance()
         deck = Deck.get_instance()
         game = Game(deck)
         game.create_players(playerNames)
@@ -520,3 +532,86 @@ class TestLootPlay(unittest.TestCase):
         self.assertTrue(p1.play_admiral(p1.hand[1], p1.merchant_ships_at_sea[0]), "Expected play to work!")
         self.assertNotIn(admiral, p1.hand)
         self.assertEqual([(p1, admiral)], p1.merchant_pirates[p1merchant])
+
+    def test_game_capture_merchant_ships1(self):
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        p1merchant1 = MerchantShip(2)
+        p1merchant2 = MerchantShip(3)
+        p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+
+        game.current_player = p1
+        game.capture_merchant_ships()
+        self.assertEqual([p1merchant1, p1merchant2], p1.merchant_ships_captured,
+                         "Expected to capture both MerchantShips!")
+
+    def test_game_capture_merchant_ships2(self):
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        p1merchant1 = MerchantShip(2)
+        p1merchant2 = MerchantShip(3)
+        p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+        p1.merchant_pirates[p1merchant1] = [(game.players[1], PirateShip("blue", 3))]
+        p2 = game.players[1]
+        game.current_player = p1
+        game.capture_merchant_ships()
+        self.assertEqual([p1merchant2], p1.merchant_ships_captured)
+
+    def test_game_capture_merchant_ships3(self):
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        p1merchant1 = MerchantShip(2)
+        p1merchant2 = MerchantShip(3)
+        p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+        p1.merchant_pirates[p1merchant1] = [(game.players[1], PirateShip("blue", 3))]
+
+        p2 = game.players[1]
+        game.current_player = p2
+        game.capture_merchant_ships()
+        self.assertEqual([p1merchant1], p2.merchant_ships_captured)
+
+    def test_game_capture_merchant_ships4(self):
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        p1merchant1 = MerchantShip(2)
+        p1merchant2 = MerchantShip(3)
+        p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+        p1.merchant_pirates[p1merchant1] = [(game.players[1], PirateShip("blue", 3)),
+                                            (game.players[2], PirateShip("green", 3))]
+
+        p2 = game.players[1]
+        game.current_player = p2
+        game.capture_merchant_ships()
+        self.assertEqual([], p2.merchant_ships_captured)
+
+    def test_game_capture_merchant_ships5(self):
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+
+        p1 = game.players[0]
+        p1merchant1 = MerchantShip(2)
+        p1.merchant_ships_at_sea = [p1merchant1]
+        p1.merchant_pirates[p1merchant1] = [(game.players[2], PirateShip("blue", 3))]
+
+        p2 = game.players[1]
+        p2merchant1 = MerchantShip(3)
+        p2.merchant_ships_at_sea = [p2merchant1]
+        p2.merchant_pirates[p2merchant1] = [(game.players[2], PirateShip("blue", 3))]
+
+        p3 = game.players[2]
+        game.current_player = p3
+        game.capture_merchant_ships()
+        self.assertEqual([p1merchant1, p2merchant1], p3.merchant_ships_captured)
