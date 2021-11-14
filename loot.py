@@ -136,6 +136,8 @@ class Player:
         # if pirate_card not in self.hand or merchant_card not in p1.merchant_ships_at_sea:
         if pirate_card not in self.hand:
             return False
+        if merchant_card not in p1.merchant_ships_at_sea:
+            return False
         if p1.merchant_pirates != {}:
             items = list(p1.merchant_pirates.items())
             if isinstance(items[len(items)-1], Admiral) or isinstance(items[len(items)-1], Captain):
@@ -168,6 +170,8 @@ class Player:
     def play_captain(self, captain_card, merchant_card, p1):
         if captain_card not in self.hand:
             return False
+        if merchant_card not in p1.merchant_ships_at_sea:
+            return False
         if not isinstance(captain_card, Captain):
             return False
         for attacks in p1.merchant_pirates.values():
@@ -189,6 +193,8 @@ class Player:
 
     def play_admiral(self, admiral_card, merchant_card):
         if admiral_card not in self.hand:
+            return False
+        if merchant_card not in self.merchant_ships_at_sea:
             return False
         if not isinstance(admiral_card, Admiral):
             return False
