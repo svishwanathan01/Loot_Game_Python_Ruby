@@ -162,6 +162,9 @@ class Player:
             p1.merchant_pirates[merchant_card] = lst
         else:
             lst = p1.merchant_pirates.get(merchant_card)
+            for item in lst:
+                if isinstance(item[1], Captain) or isinstance(item[1], Admiral):
+                    return False
             lst.append((self, pirate_card))
             p1.merchant_pirates[merchant_card] = lst
         self.hand.remove(pirate_card)
@@ -178,12 +181,8 @@ class Player:
             if attacks[0][0] == self:
                 if captain_card.color != attacks[0][1].color:
                     return False
-                # exist = True
-                # attacks[1].attack_value = pirate_card.attack_value + attacks[1].attack_value
         if p1.merchant_pirates.get(merchant_card) is None:
-            lst = []
-            lst.append((self, captain_card))
-            p1.merchant_pirates[merchant_card] = lst
+            return False
         else:
             lst = p1.merchant_pirates.get(merchant_card)
             lst.append((self, captain_card))
@@ -208,6 +207,7 @@ class Player:
             lst = self.merchant_pirates.get(merchant_card)
             lst.append((self, admiral_card))
             self.merchant_pirates[merchant_card] = lst
+        self.hand.remove(admiral_card)
         return True
 
 
@@ -259,27 +259,15 @@ class Game:
         return self.players[pos-1]
 
     def capture_merchant_ships(self):
-        for player in self.players:
-            ships = player.merchant_pirates.keys()
-            for ship in ships:
-                attackingPlayer = None
-                capturedShip = None
-                capturedPlayer = None
-                value = 0
-                tie = False
-                attacks = player.merchant_pirates.get(ship)
-                for i in range(0, len(attacks)):
-                    if attacks[i][1].attack_value > value:
-                        attackingPlayer = attacks[i][0]
-                        capturedShip = attacks[i][1]
-                        capturedPlayer = player
-                        value = attacks[i][1].attack_value
-                        tie = False
-                    elif attacks[i][1].attack_value == value:
-                        tie = True
-                if attackingPlayer == self.current_player:
-                    capturedPlayer.merchant_ships_at_sea.remove(capturedShip)
-                    attackingPlayer.merchant_ships_captured.add(capturedShip)
+        for ship in self.current_player.merchant_ships_at_sea:
+            keys = list(self.current_player.merchant_pirates.keys())
+            if ship not in keys:
+                self.current_player.merchant_ships_at_sea.remove(ship)
+                self.current_player.merchant_ships_captured.append(ship)
+                break
+
+
+
 
     def show_winner(self):
         players_list = []
