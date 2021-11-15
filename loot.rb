@@ -68,16 +68,16 @@ end
 
 class Deck
   @@instance = nil
-  @@cards = [MerchantShip.new(2), MerchantShip.new(2), MerchantShip.new(2), MerchantShip.new(2), 
-    MerchantShip.new(2),    MerchantShip.new(3), MerchantShip.new(3), MerchantShip.new(3), MerchantShip.new(3),
-    MerchantShip.new(3),    MerchantShip.new(3),    MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4),  
-      MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5),    MerchantShip.new(6), MerchantShip.new(6), MerchantShip.new(7), MerchantShip.new(8),    PirateShip.new('blue', 1), PirateShip.new('blue', 1),
-       PirateShip.new('blue', 2), PirateShip.new('blue', 2),    PirateShip.new('blue', 2), PirateShip.new('blue', 2), PirateShip.new('blue', 3), PirateShip.new('blue', 3),    PirateShip.new('blue', 3), PirateShip.new('blue', 3), PirateShip.new('blue', 4), 
-       PirateShip.new('blue', 4),    PirateShip.new('green', 1), PirateShip.new('green', 1), PirateShip.new('green', 2),    PirateShip.new('green', 2), PirateShip.new('green', 2), PirateShip.new('green', 2),    PirateShip.new('green', 3), PirateShip.new('green', 3), 
-       PirateShip.new('green', 3),    PirateShip.new('green', 3), PirateShip.new('green', 4), PirateShip.new('green', 4),    PirateShip.new('purple', 1), PirateShip.new('purple', 1), PirateShip.new('purple', 2),    PirateShip.new('purple', 2), PirateShip.new('purple', 2), 
-       PirateShip.new('purple', 2),PirateShip.new('purple', 3), PirateShip.new('purple', 3), PirateShip.new('purple', 3),PirateShip.new('purple', 3), PirateShip.new('purple', 4), PirateShip.new('purple', 4),PirateShip.new('gold', 1), PirateShip.new('gold', 1), PirateShip.new('gold', 2), 
-       PirateShip.new('gold', 2),PirateShip.new('gold', 2), PirateShip.new('gold', 2), PirateShip.new('gold', 3), PirateShip.new('gold', 3),PirateShip.new('gold', 3), PirateShip.new('gold', 3), PirateShip.new('gold', 4), PirateShip.new('gold', 4),Captain.new('blue'), 
-       Captain.new('green'), Captain.new('purple'), Captain.new('gold'), Admiral.get_instance]
+  @@cards = [MerchantShip.new(2), MerchantShip.new(2), MerchantShip.new(2), MerchantShip.new(2),
+             MerchantShip.new(2),    MerchantShip.new(3), MerchantShip.new(3), MerchantShip.new(3), MerchantShip.new(3),
+             MerchantShip.new(3),    MerchantShip.new(3),    MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4), MerchantShip.new(4),
+             MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5), MerchantShip.new(5),    MerchantShip.new(6), MerchantShip.new(6), MerchantShip.new(7), MerchantShip.new(8),    PirateShip.new('blue', 1), PirateShip.new('blue', 1),
+             PirateShip.new('blue', 2), PirateShip.new('blue', 2),    PirateShip.new('blue', 2), PirateShip.new('blue', 2), PirateShip.new('blue', 3), PirateShip.new('blue', 3),    PirateShip.new('blue', 3), PirateShip.new('blue', 3), PirateShip.new('blue', 4),
+             PirateShip.new('blue', 4),    PirateShip.new('green', 1), PirateShip.new('green', 1), PirateShip.new('green', 2),    PirateShip.new('green', 2), PirateShip.new('green', 2), PirateShip.new('green', 2),    PirateShip.new('green', 3), PirateShip.new('green', 3),
+             PirateShip.new('green', 3),    PirateShip.new('green', 3), PirateShip.new('green', 4), PirateShip.new('green', 4),    PirateShip.new('purple', 1), PirateShip.new('purple', 1), PirateShip.new('purple', 2),    PirateShip.new('purple', 2), PirateShip.new('purple', 2),
+             PirateShip.new('purple', 2),PirateShip.new('purple', 3), PirateShip.new('purple', 3), PirateShip.new('purple', 3),PirateShip.new('purple', 3), PirateShip.new('purple', 4), PirateShip.new('purple', 4),PirateShip.new('gold', 1), PirateShip.new('gold', 1), PirateShip.new('gold', 2),
+             PirateShip.new('gold', 2),PirateShip.new('gold', 2), PirateShip.new('gold', 2), PirateShip.new('gold', 3), PirateShip.new('gold', 3),PirateShip.new('gold', 3), PirateShip.new('gold', 3), PirateShip.new('gold', 4), PirateShip.new('gold', 4),Captain.new('blue'),
+             Captain.new('green'), Captain.new('purple'), Captain.new('gold'), Admiral.get_instance]
   def initialize
     if !@@instance.nil?
       raise RuntimeError
@@ -96,6 +96,10 @@ class Deck
   def cards
     @@cards
   end
+
+  def setCards(cards)
+    @@cards = cards
+  end
 end
 
 class Player
@@ -110,9 +114,18 @@ class Player
   end
 
   def deal(game_state)
+    game_state.deck.setCards(game_state.deck.cards.shuffle)
+    @dealer = game_state.current_player
+    for player in game_state.players
+      for i in 1..6
+        player.hand.append(game_state.deck.cards.pop(0))
+      end
+    end
   end
 
   def draw_card(game)
+    game.current_player = self
+    game.draw_card
   end
 
   def add_to_hand(card)
@@ -164,7 +177,7 @@ class Game
         end
         return @players[index -1]
       end
-      index += 1  
+      index += 1
     end
   end
 
@@ -177,7 +190,7 @@ class Game
         end
         return @players[index +1]
       end
-      index += 1  
+      index += 1
     end
   end
 
@@ -196,5 +209,22 @@ class Game
   end
 
   def show_winner
+    players_list = []
+    final_list = []
+    for player in @players
+      gold = 0
+      for captured in player.merchant_ships_captured
+        gold = gold + captured.get_value
+      end
+      players_list.append([player, gold])
+    end
+    players_list = players_list.sort {|a,b| a[1] <=> b[1]}.reverse
+    final_list.append(players_list[0])
+    for i in (1..players_list.length - 1)
+      if players_list[i][1] == final_list[0][1]
+        final_list.append(players_list[i])
+      end
+    end
+    return final_list
   end
 end
