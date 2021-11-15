@@ -505,9 +505,9 @@ class MyTest < Test::Unit::TestCase
     assert_equal([], p1.merchant_ships_at_sea, "Expected empty seas!")
     assert_equal([p2merchant, p1merchant1], p2.merchant_ships_captured,
                      "Expected to capture P1 MerchantShip and their own!")
-    assert_equal([], p2.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([], p2.merchant_ships_at_sea, )
     assert_equal([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
-    assert_equal([], p3.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([], p3.merchant_ships_at_sea, )
   end
 
   def test_game_capture_merchant_ships5
@@ -534,11 +534,11 @@ class MyTest < Test::Unit::TestCase
 
     game.capture_merchant_ships()
     assert_equal([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip!")
-    assert_equal([], p1.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([], p1.merchant_ships_at_sea, )
     assert_equal([p2merchant, p1merchant1], p2.merchant_ships_captured,
                      "Expected to capture P1 MerchantShip and their own!")
-    assert_equal([], p2.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([], p2.merchant_ships_at_sea,)
     assert_equal([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
-    assert_equal([], p3.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([], p3.merchant_ships_at_sea, )
   end
 end
