@@ -64,6 +64,10 @@ class Admiral
     end
     return @@instance
   end
+
+  def Admiral.set_instance
+    @@instance = nil
+  end
 end
 
 class Deck
@@ -100,6 +104,10 @@ class Deck
   def setCards(cards)
     @@cards = cards
   end
+
+  def Deck.set_instance
+    @@instance = nil
+  end
 end
 
 class Player
@@ -118,7 +126,8 @@ class Player
     @dealer = game_state.current_player
     for player in game_state.players
       for i in 1..6
-        player.hand.append(game_state.deck.cards.pop(0))
+        player.hand.append(game_state.deck.cards[0])
+        game_state.deck.cards.drop(1)
       end
     end
   end
@@ -128,19 +137,112 @@ class Player
     game.draw_card
   end
 
-  def add_to_hand(card)
+  def see_hand
+    @hand
   end
 
   def float_merchant(card)
+    if hand.include?(card) and card.instance_of?(MerchantShip)
+      @merchant_ships_at_sea.append(card)
+      @hand.delete(card)
+      return TRUE
+    end
+    return FALSE
   end
 
   def play_pirate(pirate_card, merchant_card, pl)
+    if !@hand.include?(pirate_card)
+      return FALSE
+    end
+    if !pl.merchant_ships_at_sea.include?(merchant_card)
+      return FALSE
+    end
+    if pl.merchant_pirates != {}
+      items = pl.merchant_pirates.keys
+      if items[items.length - 1].instance_of?(Admiral) or items[items.length - 1].instance_of?(Captain)
+        return FALSE
+      end
+    end
+    if !pirate_card.instance_of?(PirateShip)
+      return FALSE
+    end
+    for attacks in pl.merchant_pirates.values
+      if attacks[0][0] == self
+        if pirate_card.color != attacks[0][1].color
+          return FALSE
+        end
+      end
+    end
+    if pl.merchant_pirates[merchant_card] ==nil
+      lst = []
+      lst.append([self, pirate_card])
+      pl.merchant_pirates[merchant_card] = lst
+    else
+      lst = pl.merchant_pirates[merchant_card]
+      for item in lst
+        if item[1].instance_of?(Captain) or item[1].instance_of?(Admiral)
+          return FALSE
+        end
+      end
+      lst.append([self, pirate_card])
+      pl.merchant_pirates[merchant_card] = lst
+    end
+    @hand.delete(pirate_card)
+    return TRUE
   end
 
   def play_captain(captain_card, merchant_card, pl)
+    if !@hand.include?(captain_card)
+      return FALSE
+    end
+    if !pl.merchant_ships_at_sea.include?(merchant_card)
+      return FALSE
+    end
+    if !captain_card.instance_of?(Captain)
+      return FALSE
+    end
+    for attacks in pl.merchant_pirates.values
+      if attacks[0][0] == self
+        if captain_card.color != attacks[0][1].color
+          return FALSE
+        end
+      end
+    end
+    if pl.merchant_pirates[merchant_card] == nil
+      return FALSE
+    else
+      lst = pl.merchant_pirates[merchant_card]
+      lst.append([self, captain_card])
+      pl.merchant_pirates[merchant_card] = lst
+    end
+    hand.delete(captain_card)
+    return TRUE
   end
 
   def play_admiral(admiral_card, merchant_card)
+    if !@hand.include?(admiral_card)
+      return FALSE
+    end
+    if !@merchant_ships_at_sea.include?(merchant_card)
+      return FALSE
+    end
+    if !admiral_card.instance_of?(Admiral)
+      return FALSE
+    end
+    if !merchant_ships_at_sea.include?(merchant_card)
+      return FALSE
+    end
+    if @merchant_pirates[merchant_card] == nil
+      lst = []
+      lst.append([self, admiral_card])
+      @merchant_pirates[merchant_card] = lst
+    else
+      lst = @merchant_pirates[merchant_card]
+      lst.append([self, admiral_card])
+      merchant_pirates[merchant_card] = lst
+    end
+    @hand.delete(admiral_card)
+    return TRUE
   end
 end
 

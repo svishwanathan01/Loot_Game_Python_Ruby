@@ -141,4 +141,292 @@ class MyTest < Test::Unit::TestCase
     assert_equal(players[1].hand.length, 8, 'Expected to have 6 cards in hand')
     assert_equal(players[2].hand.length, 9, 'Expected to have 6 cards in hand')
   end
+
+  def test_player_float_merchant
+    Deck.set_instance()
+    Admiral.set_instance()
+    game = Game.new(Deck.get_instance())
+    assert_equal(game.deck.cards.length, 78)
+    # print(game.deck.cards)
+    names = ['X', 'Y', 'Z']
+    game.create_players(names)
+    players = game.players
+    players[0].deal(game)
+    # puts()
+    # print(players[0].hand)
+    # print(players[1].hand)
+    # print(players[2].hand)
+    # print(len(Deck.get_instance().cards))
+    player0Merchants = []
+    player1Merchants = []
+    player2Merchants = []
+    # print(players[0].see_hand)
+    for card in players[0].see_hand()
+      if card.instance_of?(MerchantShip)
+        players[0].float_merchant(card)
+        player0Merchants.append(card)
+      end
+    end
+    for card in players[1].see_hand()
+      if card.instance_of?(MerchantShip)
+        players[1].float_merchant(card)
+        player1Merchants.append(card)
+      end
+    end
+    for card in players[2].see_hand()
+      if card.instance_of?(MerchantShip)
+        players[2].float_merchant(card)
+        player2Merchants.append(card)
+      end
+    end
+    print(player0Merchants)
+    assert_equal(players[0].merchant_ships_at_sea, player0Merchants)
+    assert_equal(players[1].merchant_ships_at_sea, player1Merchants)
+    assert_equal(players[2].merchant_ships_at_sea, player2Merchants)
+  end
+
+  def test_player_play_pirate
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1pirate1 = PirateShip.new("purple", 2)
+    p1pirate2 = PirateShip.new("green", 2)
+    p1pirate3 = PirateShip.new("purple", 3)
+    p1.hand = [p1pirate1, p1pirate2, p1pirate3]
+
+    p2 = game.players[1]
+    p2pirate = PirateShip.new("purple", 2)
+    p2merchant = MerchantShip.new(2)
+    p2.hand = [p2pirate]
+    p2.merchant_ships_at_sea = [p2merchant]
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                "Expected to play pirate against merchant ship")
+    assert_equal([[p1, p1pirate1]], p2.merchant_pirates[p2merchant],
+                 "Expected to show tuple from merchant_pirates dictionary")
+    assert_false(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                 "Cannot play a different colored PirateShip")
+    assert_true(p1.play_pirate(p1.hand[1], p2.merchant_ships_at_sea[0], p2),
+                "Expected to play pirate against merchant ship")
+    assert_equal([[p1, p1pirate1], [p1, p1pirate3]], p2.merchant_pirates[p2merchant],
+                 "Expected to show tuple from merchant_pirates dictionary")
+  end
+
+  def test_player_play_captain
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+    p1 = game.players[0]
+    p1.hand = [PirateShip.new("blue", 2), Captain.new('blue'), PirateShip.new("green", 2)]
+    p1pirate1 = p1.hand[0]
+    p1Captain = p1.hand[1]
+    p1pirate2 = p1.hand[2]
+
+    p2 = game.players[1]
+    p2.hand = [PirateShip.new("purple", 2)]
+    p2.merchant_ships_at_sea = [MerchantShip.new(2)]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                'Expected to successfully play pirate ship')
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                'Expected to successfully play pirate ship')
+    assert_equal([[p1, p1pirate1], [p1, p1Captain]], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                 'Expected to see tuple in merchant_pirates instance')
+    assert_false(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                 'Cannot play non-captain object')
+  end
+
+  def test_player_play_captain2
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+    p1 = game.players[0]
+    p1.hand = [PirateShip.new("green", 2), Captain.new('blue'),]
+    p1pirate1 = p1.hand[0]
+    p1pirate2 = p1.hand[1]
+
+    p2 = game.players[1]
+    p2.hand = [PirateShip.new("purple", 2)]
+    p2.merchant_ships_at_sea = [MerchantShip.new(2)]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                "Expected to play pirate against merchant ship")
+    assert_false(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                 'Cannot play different colored Captain')
+    # self.assertEqual([(p1, p1pirate1)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]])
+    # self.assertFalse(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2))
+  end
+
+  def test_player_play_captain3
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+    p1 = game.players[0]
+    p1.hand = [PirateShip.new("blue", 2), Captain.new('blue'),]
+    p1pirate1 = p1.hand[0]
+    p1pirate2 = p1.hand[1]
+
+    p2 = game.players[1]
+    p2.hand = [PirateShip.new("purple", 2)]
+    p2.merchant_ships_at_sea = [MerchantShip.new(2)]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                "Expected to play pirate against merchant ship")
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                'Cannot play different colored Captain')
+    # print(p2.merchant_pirates[p2.merchant_ships_at_sea[0]][1])
+    # print(p2.merchant_pirates[p2.merchant_ships_at_sea[1]])
+    assert_equal([[p1, p1pirate1], [p1, p1pirate2]], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                 'Expected to find attack tuples in merchant_pirates object')
+  end
+
+  def test_player_play_captain4
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1pirate = PirateShip.new("blue", 2)
+    p1captain = Captain.new("blue")
+    p1.hand = [p1pirate, p1captain]
+
+    p2 = game.players[1]
+    p2pirate = PirateShip.new("blue", 2)
+    p2merchant = MerchantShip.new(2)
+    p2.hand = [p2pirate]
+    p2.merchant_ships_at_sea = [p2merchant]
+
+    assert_false(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected P1 Captain!")
+    assert_false(p1.play_captain(p1.hand[1], p2.hand[0], p2), "Expected P2 MerchantShip!")
+    assert_false(p1.play_captain(Captain.new("blue"), p2.merchant_ships_at_sea[0], p2),
+                 "Captain must be in P1 hand!")
+    assert_false(p1.play_captain(p1.hand[1], MerchantShip.new(2), p2), "MerchantShip must be in P2 sea!")
+    # print(p1.hand[1])
+    assert_false(p1.play_captain(p1.hand[1], p2.merchant_ships_at_sea[0], p2), "No PirateShip in play!")
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_false(p1.hand.include?(p1captain))
+    assert_equal([[p1, p1pirate], [p1, p1captain]], p2.merchant_pirates[p2merchant],
+                 "Expected to show played (Player,Attacker)")
+  end
+
+  def test_player_play_captain5
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1pirate = PirateShip.new("blue", 2)
+    p1captain = Captain.new("blue")
+    p1.hand = [p1pirate, p1captain]
+
+    p2 = game.players[1]
+    p2pirate = PirateShip.new("green", 2)
+    p2merchant = MerchantShip.new(2)
+    p2.hand = [p2pirate]
+    p2.merchant_ships_at_sea = [p2merchant]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_false(p2.play_pirate(p2.hand[0], p2.merchant_ships_at_sea[0], p2),
+                 "Cannot play a PirateShip after a Captain has been played!")
+  end
+
+  def test_player_play_captain6
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1pirate = PirateShip.new("blue", 2)
+    p1captain = Captain.new("blue")
+    p1.hand = [p1pirate, p1captain]
+
+    p2 = game.players[1]
+    p2pirate = PirateShip.new("green", 2)
+    p2captain = Captain.new("green")
+    p2merchant = MerchantShip.new(2)
+    p2.hand = [p2pirate, p2captain]
+    p2.merchant_ships_at_sea = [p2merchant]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_true(p2.play_pirate(p2.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_true(p2.play_captain(p2.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+    assert_false(p2.hand.include?(p2captain))
+    assert_equal([[p1, p1pirate], [p2, p2pirate], [p1, p1captain], [p2, p2captain]],
+                 p2.merchant_pirates[p2merchant], "Expected to show played (Player,Attacker)")
+  end
+
+  def test_player_play_admiral1
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+    p1 = game.players[0]
+    p1.hand = [PirateShip.new("blue", 2), Captain.new('blue'), PirateShip.new("green", 2)]
+    p1pirate1 = p1.hand[0]
+    p1Captain = p1.hand[1]
+    p1pirate2 = p1.hand[2]
+
+    p2 = game.players[1]
+    p2.hand = [Admiral.get_instance(), PirateShip.new("purple", 2),]
+    p2Admiral = p2.hand[0]
+    p2Pirate = p2.hand[1]
+    p2.merchant_ships_at_sea = [MerchantShip.new(2)]
+
+    assert_true(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                'Expected to successfully play pirate ship')
+    assert_true(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                'Expected to successfully play pirate ship')
+    assert_equal([[p1, p1pirate1], [p1, p1Captain]], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                 'Expected to see tuple in merchant_pirates instance')
+    assert_true(p2.play_admiral(p2Admiral, p2.merchant_ships_at_sea[0]),
+                'Expected to successfully play captain')
+    assert_equal([[p1, p1pirate1], [p1, p1Captain], [p2, p2Admiral]], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                 'Expected to see tuple in merchant_pirates instance')
+
+  end
+
+  def test_player_play_admiral2
+    Deck.set_instance()
+    Admiral.set_instance()
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1pirate = PirateShip.new("blue", 2)
+    admiral = Admiral.get_instance()
+    p1merchant = MerchantShip.new(2)
+    p1.merchant_ships_at_sea = [p1merchant]
+    assert_false(p1.play_admiral(Admiral.get_instance(), p1.merchant_ships_at_sea[0]),
+                 "Admiral must be in P1 hand!")
+    p1.hand = [p1pirate, admiral]
+
+    assert_false(p1.play_admiral(p1.hand[0], p1.merchant_ships_at_sea[0]), "Expected Admiral!")
+    assert_false(p1.play_admiral(p1.hand[1], p1.hand[0]), "Expected P1 MerchantShip!")
+    assert_false(p1.play_admiral(p1.hand[1], MerchantShip.new(2)), "MerchantShip must be in P1 sea!")
+    assert_true(p1.play_admiral(p1.hand[1], p1.merchant_ships_at_sea[0]), "Expected play to work!")
+    assert_false(p1.hand.include?(admiral))
+    assert_equal([[p1, admiral]], p1.merchant_pirates[p1merchant])
+
+  end
 end
