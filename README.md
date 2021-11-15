@@ -1,44 +1,4 @@
-# Homework Assignment 4
-
-## Learning Outcomes
-
-After completion of this assignment, you should be able to:
-
-- Prototype an application in Python and Ruby.
-
-- Write unit tests to systematically test your scripts.
-
-
-## Getting Started
-
-To complete this homework assignment, you will need Ruby2 (preferably 2.6 or higher) and Python 3.5 or higher. These should have already been installed from previous assignments. It is recommended to use *pytest* to run any Python unit tests you may write. Install it using Python's package manager pip. Refer to the lecture notes for instructions on installation if needed.
-
-Read the rest of the document carefully. This document describes everything that you will need to correctly implement the homework and submit the code for testing.
-
-The first thing you need to do is download or clone this repository to your local system. Use the following command:
-
-`$ git clone <ssh-link>`
-
-After you clone, you will see a directory of the form *cise337-hw4-more-scripting-\<username\>*, where *username* is your GitHub username.
-
-In this directory, you will find the following files:
-- *loot.py*: Your Python implementation goes here.
-- *loot.rb*: Your Ruby implementation goes here.
-- *loot_deck_test.py*: Write test code to verify the correctness of the card deck for Python.
-- *loot_play_test.py*: Write test code to verify playing the game for Python.
-- *loot_deck_test.rb*: Write test code to verify the correctness of the card deck for Ruby.
-- *loot_play_test.rb*: Write test code to verify playing the game for Ruby.
-
-**At the top of each file you will find hints to fill your full name, NetID, and SBU ID. Please fill them accurately**. This information will be used to collect your scores from GitHub. If you do not provide this information, your submission may not be graded. You should write the implementation and the tests needed to verify the correctness of your implementation.
-
-
-## Grading
-
-We will run a different set of test cases to verify the correctness of your implementation. You will get credit for every passing test similar to previous assignments, except here we do not provide the test cases.
-
-You will need to write your own unit tests in Python and Ruby using the unit test frameworks discussed in class. We will evaluate your tests using coverage tools to determine how well your tests cover the code in your implementation. Points will be based on coverage percentage.
-
-The homework assignment is worth a total of 100 points. 40 points for the Python implementation, 40 points for the Ruby implementation, 10 points for the Python test cases, and 10 points for the Ruby test cases.
+# Loot Game in Python and Ruby
 
 ## Problem Specification
 In this assignment, we will develop a card game called loot in Python and Ruby. We will first outline the rules of this game.
@@ -161,23 +121,3 @@ The Python implementation should be in the file `loot.py`. The Ruby implementati
   - *show_winner()* is a method that returns a list of players with the highest no. of gold coins collected from the merchant ships captured. Each element in the list is a pair where the first element is an instance of *Player* and the second element is the total no. of gold coins the player won.
 
 
-## Submitting Code to GitHub
-
-You can submit code to your GitHub repository as many times as you want till the deadline. After the deadline, any code you try to submit will be rejected. To submit a file to the remote repository, you first need to add it to the local git repository in your system, that is, directory where you cloned the remote repository initially. Use following commands from your terminal:
-
-`$ cd /path/to/cise337-hw4-more-scripting-<username>` (skip if you are already in this directory)
-
-```
-$ git add loot.py
-$ git add loot_deck_test.py
-$ git add loot_play_test.py
-$ git add loot.rb
-$ git add loot_deck_test.rb
-$ git add loot_play_test.rb
-```
-
-To submit your work to the remote GitHub repository, you will need to commit the file (with a message) and push the file to the repository. Use the following commands:
-
-`$ git commit -m "<your-custom-message>"`
-
-`$ git push`
