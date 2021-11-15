@@ -399,34 +399,6 @@ class TestLootPlay(unittest.TestCase):
         self.assertEqual([(p1, p1pirate1), (p1, p1pirate2)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
                          'Expected to find attack tuples in merchant_pirates object')
 
-    def test_player_play_admiral1(self):
-        Deck.set_instance()
-        Admiral.set_instance()
-        deck = Deck.get_instance()
-        game = Game(deck)
-        game.create_players(playerNames)
-        p1 = game.players[0]
-        p1.hand = [PirateShip("blue", 2), Captain('blue'), PirateShip("green", 2)]
-        p1pirate1 = p1.hand[0]
-        p1Captain = p1.hand[1]
-        p1pirate2 = p1.hand[2]
-
-        p2 = game.players[1]
-        p2.hand = [Admiral.get_instance(), PirateShip("purple", 2),]
-        p2Admiral = p2.hand[0]
-        p2Pirate = p2.hand[1]
-        p2.merchant_ships_at_sea = [MerchantShip(2)]
-
-        self.assertTrue(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
-                        'Expected to successfully play pirate ship')
-        self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
-                        'Expected to successfully play pirate ship')
-        self.assertEqual([(p1, p1pirate1), (p1, p1Captain)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
-                         'Expected to see tuple in merchant_pirates instance')
-        self.assertTrue(p2.play_admiral(p2Admiral, p2.merchant_ships_at_sea[0]),
-                        'Expected to successfully play captain')
-        self.assertEqual([(p1, p1pirate1), (p1, p1Captain), (p2, p2Admiral)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
-                         'Expected to see tuple in merchant_pirates instance')
 
     def test_player_play_captain4(self):
         Deck.set_instance()
@@ -449,41 +421,18 @@ class TestLootPlay(unittest.TestCase):
         self.assertFalse(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected P1 Captain!")
         self.assertFalse(p1.play_captain(p1.hand[1], p2.hand[0], p2), "Expected P2 MerchantShip!")
         self.assertFalse(p1.play_captain(Captain("blue"), p2.merchant_ships_at_sea[0], p2),
-                         "Captain must be in P1 hand!")
-        self.assertFalse(p1.play_captain(p1.hand[1], MerchantShip(2), p2), "MerchantShip must be in P2 sea!")
+                         "Check p1 hand!")
+        self.assertFalse(p1.play_captain(p1.hand[1], MerchantShip(2), p2), )
         # print(p1.hand[1])
         self.assertFalse(p1.play_captain(p1.hand[1], p2.merchant_ships_at_sea[0], p2), "No PirateShip in play!")
 
-        self.assertTrue(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
-        self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
+        self.assertTrue(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),)
+        self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),)
         self.assertNotIn(p1captain, p1.hand)
         self.assertEqual([(p1, p1pirate), (p1, p1captain)], p2.merchant_pirates[p2merchant],
-                         "Expected to show played (Player,Attacker)")
+                         "Expected to see tuple in merchant_pirates instance")
 
     def test_player_play_captain5(self):
-        Deck.set_instance()
-        Admiral.set_instance()
-        deck = Deck.get_instance()
-        game = Game(deck)
-        game.create_players(playerNames)
-
-        p1 = game.players[0]
-        p1pirate = PirateShip("blue", 2)
-        p1captain = Captain("blue")
-        p1.hand = [p1pirate, p1captain]
-
-        p2 = game.players[1]
-        p2pirate = PirateShip("green", 2)
-        p2merchant = MerchantShip(2)
-        p2.hand = [p2pirate]
-        p2.merchant_ships_at_sea = [p2merchant]
-
-        self.assertTrue(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
-        self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2), "Expected play to work!")
-        self.assertFalse(p2.play_pirate(p2.hand[0], p2.merchant_ships_at_sea[0], p2),
-                         "Cannot play a PirateShip after a Captain has been played!")
-
-    def test_player_play_captain6(self):
         Deck.set_instance()
         Admiral.set_instance()
         deck = Deck.get_instance()
@@ -532,6 +481,35 @@ class TestLootPlay(unittest.TestCase):
         self.assertTrue(p1.play_admiral(p1.hand[1], p1.merchant_ships_at_sea[0]), "Expected play to work!")
         self.assertNotIn(admiral, p1.hand)
         self.assertEqual([(p1, admiral)], p1.merchant_pirates[p1merchant])
+
+    def test_player_play_admiral1(self):
+        Deck.set_instance()
+        Admiral.set_instance()
+        deck = Deck.get_instance()
+        game = Game(deck)
+        game.create_players(playerNames)
+        p1 = game.players[0]
+        p1.hand = [PirateShip("blue", 2), Captain('blue'), PirateShip("green", 2)]
+        p1pirate1 = p1.hand[0]
+        p1Captain = p1.hand[1]
+        p1pirate2 = p1.hand[2]
+
+        p2 = game.players[1]
+        p2.hand = [Admiral.get_instance(), PirateShip("purple", 2),]
+        p2Admiral = p2.hand[0]
+        p2Pirate = p2.hand[1]
+        p2.merchant_ships_at_sea = [MerchantShip(2)]
+
+        self.assertTrue(p1.play_pirate(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                        'Expected to successfully play pirate ship')
+        self.assertTrue(p1.play_captain(p1.hand[0], p2.merchant_ships_at_sea[0], p2),
+                        'Expected to successfully play pirate ship')
+        self.assertEqual([(p1, p1pirate1), (p1, p1Captain)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                         'Expected to see tuple in merchant_pirates instance')
+        self.assertTrue(p2.play_admiral(p2Admiral, p2.merchant_ships_at_sea[0]),
+                        'Expected to successfully play captain')
+        self.assertEqual([(p1, p1pirate1), (p1, p1Captain), (p2, p2Admiral)], p2.merchant_pirates[p2.merchant_ships_at_sea[0]],
+                         'Expected to see tuple in merchant_pirates instance')
 
     def test_game_capture_merchant_ships1(self):
         deck = Deck.get_instance()

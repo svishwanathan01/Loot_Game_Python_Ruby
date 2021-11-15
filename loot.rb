@@ -308,6 +308,7 @@ class Game
   end
 
   def capture_merchant_ships
+    
   end
 
   def show_winner
