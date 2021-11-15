@@ -429,4 +429,116 @@ class MyTest < Test::Unit::TestCase
     assert_equal([[p1, admiral]], p1.merchant_pirates[p1merchant])
 
   end
+
+  def test_game_capture_merchant_ships1
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1merchant1 = MerchantShip.new(2)
+    p1merchant2 = MerchantShip.new(3)
+    p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+
+    game.current_player = p1
+    game.capture_merchant_ships()
+    assert_equal([p1merchant1, p1merchant2], p1.merchant_ships_captured,
+                     "Expected to capture both MerchantShips!")
+  end
+
+  def test_game_capture_merchant_ships2
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1merchant1 = MerchantShip.new(2)
+    p1merchant2 = MerchantShip.new(3)
+    p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+    p1.merchant_pirates[p1merchant1] = [[game.players[1], PirateShip.new("blue", 3)]]
+    p2 = game.players[1]
+    game.current_player = p1
+    game.capture_merchant_ships()
+    assert_equal([p1merchant2], p1.merchant_ships_captured)
+  end
+
+  def test_game_capture_merchant_ships3
+      deck = Deck.get_instance()
+      game = Game.new(deck)
+      game.create_players($playerNames)
+
+      p1 = game.players[0]
+      p1merchant1 = MerchantShip.new(2)
+      p1merchant2 = MerchantShip.new(3)
+      p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+      p1.merchant_pirates[p1merchant1] = [[game.players[1], PirateShip.new("blue", 3)]]
+
+      p2 = game.players[1]
+      game.current_player = p2
+      game.capture_merchant_ships()
+      assert_equal([p1merchant1], p2.merchant_ships_captured)
+      assert_equal([p1merchant2], p1.merchant_ships_captured)
+  end
+
+  def test_game_capture_merchant_ships4
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1merchant1 = MerchantShip.new(2)
+    p1merchant2 = MerchantShip.new(3)
+    p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+    p1.merchant_pirates[p1merchant1] = [[game.players[1], PirateShip.new("blue", 2)],
+      [game.players[2], PirateShip.new("green", 3)], [game.players[1], Captain.new("blue")]]
+
+    p2 = game.players[1]
+    p2merchant = MerchantShip.new(2)
+    p2.merchant_ships_at_sea = [p2merchant]
+
+    p3 = game.players[2]
+    p3merchant = MerchantShip.new(2)
+    p3.merchant_ships_at_sea = [p3merchant]
+
+    game.capture_merchant_ships()
+    assert_equal([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip!")
+    assert_equal([], p1.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([p2merchant, p1merchant1], p2.merchant_ships_captured,
+                     "Expected to capture P1 MerchantShip and their own!")
+    assert_equal([], p2.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
+    assert_equal([], p3.merchant_ships_at_sea, "Expected empty seas!")
+  end
+
+  def test_game_capture_merchant_ships5
+    deck = Deck.get_instance()
+    game = Game.new(deck)
+    game.create_players($playerNames)
+
+    p1 = game.players[0]
+    p1merchant1 = MerchantShip.new(2)
+    p1merchant2 = MerchantShip.new(3)
+    p1.merchant_ships_at_sea = [p1merchant1, p1merchant2]
+    p1.merchant_pirates[p1merchant1] = [[game.players[1], PirateShip.new("blue", 2)],
+                                        [game.players[2], PirateShip.new("green", 3)],
+                                        [game.players[0], Admiral.get_instance()],
+                                        [game.players[1], Captain.new("blue")]]
+
+    p2 = game.players[1]
+    p2merchant = MerchantShip.new(2)
+    p2.merchant_ships_at_sea = [p2merchant]
+
+    p3 = game.players[2]
+    p3merchant = MerchantShip.new(2)
+    p3.merchant_ships_at_sea = [p3merchant]
+
+    game.capture_merchant_ships()
+    assert_equal([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip!")
+    assert_equal([], p1.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([p2merchant, p1merchant1], p2.merchant_ships_captured,
+                     "Expected to capture P1 MerchantShip and their own!")
+    assert_equal([], p2.merchant_ships_at_sea, "Expected empty seas!")
+    assert_equal([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
+    assert_equal([], p3.merchant_ships_at_sea, "Expected empty seas!")
+  end
 end

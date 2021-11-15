@@ -579,13 +579,12 @@ class TestLootPlay(unittest.TestCase):
         p3.merchant_ships_at_sea = [p3merchant]
 
         game.capture_merchant_ships()
-        self.assertEqual([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip!")
-        self.assertEqual([], p1.merchant_ships_at_sea, "Expected empty seas!")
-        self.assertEqual([p2merchant, p1merchant1], p2.merchant_ships_captured,
-                         "Expected to capture P1 MerchantShip and their own!")
-        self.assertEqual([], p2.merchant_ships_at_sea, "Expected empty seas!")
-        self.assertEqual([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
-        self.assertEqual([], p3.merchant_ships_at_sea, "Expected empty seas!")
+        self.assertEqual([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip")
+        self.assertEqual([], p1.merchant_ships_at_sea,)
+        self.assertEqual([p2merchant, p1merchant1], p2.merchant_ships_captured,"Expected to see two merchants captured")
+        self.assertEqual([], p2.merchant_ships_at_sea,)
+        self.assertEqual([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip")
+        self.assertEqual([], p3.merchant_ships_at_sea,)
 
     def test_game_capture_merchant_ships5(self):
         deck = Deck.get_instance()
@@ -611,9 +610,8 @@ class TestLootPlay(unittest.TestCase):
 
         game.capture_merchant_ships()
         self.assertEqual([p1merchant2], p1.merchant_ships_captured, "Expected one captured PirateShip!")
-        self.assertEqual([], p1.merchant_ships_at_sea, "Expected empty seas!")
-        self.assertEqual([p2merchant, p1merchant1], p2.merchant_ships_captured,
-                         "Expected to capture P1 MerchantShip and their own!")
-        self.assertEqual([], p2.merchant_ships_at_sea, "Expected empty seas!")
+        self.assertEqual([], p1.merchant_ships_at_sea,)
+        self.assertEqual([p2merchant, p1merchant1], p2.merchant_ships_captured,)
+        self.assertEqual([], p2.merchant_ships_at_sea,)
         self.assertEqual([p3merchant], p3.merchant_ships_captured, "Expected one captured PirateShip!")
-        self.assertEqual([], p3.merchant_ships_at_sea, "Expected empty seas!")
+        self.assertEqual([], p3.merchant_ships_at_sea,)

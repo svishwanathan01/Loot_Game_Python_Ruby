@@ -308,7 +308,60 @@ class Game
   end
 
   def capture_merchant_ships
-    
+    for player in @players
+      to_remove = []
+      ships_at_sea = player.merchant_ships_at_sea
+      keys = player.merchant_pirates.keys
+      for ship in ships_at_sea
+        if !keys.include?(ship)
+          to_remove.append(ship)
+          player.merchant_ships_captured.append(ship)
+        end
+      end
+      for ship in to_remove
+        player.merchant_ships_at_sea.delete(ship)
+      end
+    end
+    for player in @players
+      keys = player.merchant_pirates.keys
+      for key in keys
+        attacks = player.merchant_pirates[key]
+        if attacks[attacks.length - 1][1].instance_of?(Admiral)
+          player.merchant_ships_at_sea.delete(key)
+          player.merchant_ships_captured.append(key)
+          player.merchant_pirates.delete(key)
+        elsif attacks[attacks.length - 1][1].instance_of?(Captain)
+          player.merchant_ships_at_sea.delete(key)
+          attacks[attacks.length - 1][0].merchant_ships_captured.append(key)
+          player.merchant_pirates.delete(key)
+        end
+      end
+    end
+    for player in @players
+      shipsAttacked = player.merchant_pirates.keys
+      for ship in shipsAttacked
+        attacks = player.merchant_pirates[ship]
+        attackMax = {}
+        if !attacks.nil?
+          for attack in attacks
+            if !attackMax.keys.include?(attack[0])
+              attackMax[attack[0]] = attack[1].attack_value
+            else
+              attackMax[attack[0]] = attackMax[attack[0]] + attack[1].attack_value
+            end
+          end
+          sorted_d = attackMax.sort_by {|k,v| v}.reverse
+          lst = attackMax.keys
+          if lst.length == 1
+            player.merchant_ships_at_sea.delete(ship)
+            lst[0].merchant_ships_captured.append(ship)
+          elsif attackMax[lst[0]] != attackMax[lst[1]]
+            player.merchant_ships_at_sea.delete(ship)
+            lst[0].merchant_ships_captured.append(ship)
+          end
+        end
+      end
+    end
   end
 
   def show_winner
